@@ -1,0 +1,10 @@
+<h1>Hi! Please, log in:</h1>
+
+<form action="/api/sessions/login" method="post">
+    <label>Email: </label> <input type="email" name="email" /> <br /><br /> 
+    <label>Password: </label> <input type="password" name="password" /> <br /><br /> 
+    <button>Log In</button>
+    <button type="button"><a href="/api/sessions/github">Sign in with Github</a></button>
+    <p>Don't have an account? <a href="/register">Register</a></p>
+    <p><a href="/restore-password">Forgot password?</a></p>
+</form>
