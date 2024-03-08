@@ -1,5 +1,6 @@
 import { productsService } from "../repositories/index.js";
 import ProductDTO from "../dtos/product.dto.js";
+import { handlePolicies } from "../middlewares/auth.js";
 
 export const getProducts = async (req, res) => {
     const { limit, sort, page, query } = req.query; 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkAuth, checkExistingUser } from "../middlewares/auth.js";
+import { checkAuth, checkExistingUser, handlePolicies } from "../middlewares/auth.js";
 import { productsService, cartsService } from "../repositories/index.js";
 
 const viewRouter = Router()
@@ -10,15 +10,15 @@ viewRouter.get('/', checkAuth, async (req, res) => {
     res.render('home', {user, products, title: 'WaraSound'})
 })
 
-viewRouter.get('/realtimeproducts', checkAuth, (req, res) => {
+viewRouter.get('/realtimeproducts', checkAuth, handlePolicies(['ADMIN']), (req, res) => {
     res.render('realTimeProducts', {title: 'WaraSound | Real-Time Products'})
 })  
 
-viewRouter.get('/chat', checkAuth, (req, res) =>     {
+viewRouter.get('/chat', checkAuth, handlePolicies(['USER']), (req, res) => {
     res.render('chat', {title: 'WaraSound | Chat'})
 })
 
-viewRouter.get('/products', checkAuth, async (req, res) => {
+viewRouter.get('/products', checkAuth, handlePolicies(['USER']), async (req, res) => {
     const {user} = req.session
     const { page = 1, limit = 10, sort = '', query = ''} = req.query;
     const data = await productsService.getProducts(limit, sort, page, query)

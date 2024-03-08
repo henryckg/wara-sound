@@ -1,5 +1,4 @@
-import { productsService } from "./repositories/index.js"
-import { messagesService } from "./repositories/index.js"
+import { productsService, messagesService } from "./repositories/index.js"
 
 export default (io) => {
     io.on('connect', async (socket) => {

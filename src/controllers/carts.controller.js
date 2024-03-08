@@ -1,5 +1,4 @@
-import { cartsService } from "../repositories/index.js";
-import { productsService } from "../repositories/index.js";
+import { cartsService, productsService } from "../repositories/index.js";
 
 export const getCartById = async (req, res) => {
     const { cid } = req.params;
