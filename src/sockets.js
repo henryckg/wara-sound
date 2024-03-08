@@ -1,7 +1,5 @@
 import { productsService } from "./repositories/index.js"
-import MessagesMongo from "./dao/mongo/messages.mongo.js"
-
-const messagesService = new MessagesMongo()
+import { messagesService } from "./repositories/index.js"
 
 export default (io) => {
     io.on('connect', async (socket) => {
@@ -10,23 +8,15 @@ export default (io) => {
         io.emit('server:getProducts', products)
     
         socket.on('client:addProduct', async (data) => {
-            try {
-                await productsService.createProduct(data)
-                const updatedProducts = await productsService.getAllProducts()
-                socket.emit('server:getProducts', updatedProducts)
-            } catch (error) {
-                console.error(error)
-            }
+            await productsService.createProduct(data)
+            const updatedProducts = await productsService.getAllProducts()
+            socket.emit('server:getProducts', updatedProducts)
         })
     
         socket.on('client:deleteProduct', async (data) => {
-            try {
-                await productsService.deleteProduct(data)
-                const updatedProducts = await productsService.getAllProducts()
-                socket.emit('server:getProducts', updatedProducts)
-            } catch (error) {
-                console.error(error.message)
-            }
+            await productsService.deleteProduct(data)
+            const updatedProducts = await productsService.getAllProducts()
+            socket.emit('server:getProducts', updatedProducts)
         })
     
         socket.on('client:message', async (data) => {
