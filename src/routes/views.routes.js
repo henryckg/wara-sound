@@ -28,7 +28,7 @@ viewRouter.get('/products', checkAuth, handlePolicies(['USER']), async (req, res
     res.render('products', {data, title: 'WaraSound | Products', user})
 })
 
-viewRouter.get('/carts/:cid', checkAuth, async (req, res) => {
+viewRouter.get('/carts/:cid', checkAuth, handlePolicies(['USER']), async (req, res) => {
     const {cid} = req.params
     const cart = await cartsService.getCart(cid)
     res.render('cart', {cart, title: 'WaraSound | Cart'})

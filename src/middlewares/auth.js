@@ -32,13 +32,13 @@ export const checkAdmin = (req, res, next) => {
 }
 
 export const handlePolicies = (policies) => (req, res, next) => {
-        const user = req.session.user
-        if(!user){
-            return res.status(401).send({error: 'Unauthorized'})
-        }
-        if(policies.find(p => p === 'PUBLIC')) return next()
-        if(!policies.includes(user.role.toUpperCase())){
-            return res.status(403).send({error: 'Forbidden'})
-        }
-        next()
+    if(policies.find(p => p === 'PUBLIC')) return next()
+    const user = req.session.user
+    if(!user){
+        return res.status(401).send({error: 'Unauthorized'})
+    }
+    if(!policies.includes(user.role.toUpperCase())){
+        return res.status(403).send({error: 'Forbidden'})
+    }
+    next()
     }

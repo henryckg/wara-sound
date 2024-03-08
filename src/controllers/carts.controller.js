@@ -71,3 +71,7 @@ export const emptyCart = async (req, res) => {
     }
     res.send({message: 'Products deleted'})
 }
+
+export const purchaseCart = async (req, res) => {
+    
+}
