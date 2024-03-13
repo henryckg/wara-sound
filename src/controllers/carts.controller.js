@@ -1,5 +1,6 @@
 import { cartsService, productsService, ticketsService } from "../repositories/index.js";
 import { codeGenerator } from "../utils/codeGenerator.js";
+import { sendMail } from "../utils/nodemailer.js";
 
 export const getCartById = async (req, res) => {
     const { cid } = req.params;
@@ -111,6 +112,7 @@ export const purchaseCartById = async (req, res) => {
         purchaser: req.session.user.email
     })
 
+
     if(!ticket){
         return res.status(400).send({status: 'error', message: 'Something went wrong'})
     }
@@ -120,6 +122,7 @@ export const purchaseCartById = async (req, res) => {
         return res.send({message: 'Some products could not be purchased', products: noStockProducts})
     } else {
         cartsService.deleteContentInCart(cid)
+        sendMail(ticket.purchaser , ticket.code)
         return res.send(ticket)
     }
 }
