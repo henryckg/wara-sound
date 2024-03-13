@@ -112,17 +112,17 @@ export const purchaseCartById = async (req, res) => {
         purchaser: req.session.user.email
     })
 
-
     if(!ticket){
         return res.status(400).send({status: 'error', message: 'Something went wrong'})
     }
 
     if(noStockProducts.length > 0){
+        //Se actualiza el carrito para que quede con productos sin stock suficiente
         await cartsService.updateCart(cid, {products: noStockProducts}) 
         return res.send({message: 'Some products could not be purchased', products: noStockProducts})
     } else {
-        cartsService.deleteContentInCart(cid)
-        sendMail(ticket.purchaser , ticket.code)
+        cartsService.deleteContentInCart(cid) //Se vacía el carrito
+        sendMail(ticket.purchaser, ticket.code) //Generamos mail con el ticket.
         return res.send(ticket)
     }
 }
