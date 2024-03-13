@@ -1,4 +1,5 @@
-import { cartsService, productsService } from "../repositories/index.js";
+import { cartsService, productsService, ticketsService } from "../repositories/index.js";
+import { codeGenerator } from "../utils/codeGenerator.js";
 
 export const getCartById = async (req, res) => {
     const { cid } = req.params;
@@ -72,6 +73,53 @@ export const emptyCart = async (req, res) => {
     res.send({message: 'Products deleted'})
 }
 
-export const purchaseCart = async (req, res) => {
+export const purchaseCartById = async (req, res) => {
+    const {cid} = req.params
+    const cart = await cartsService.getCart(cid)
+    if(!cart){
+        return res.status(404).json({message: 'Cart not found'})
+    }
+    let totalAmount = 0
+    let noStockProducts = []
+    if(!cart){
+        return res.status(404).json({message: 'Cart not found'})
+    }
+    const productsInCart = cart.products.map(async prod => {
+        const product = prod.product;
+        const qty = prod.quantity;
+        const id = product._id;
+        const stock = product.stock;
+        const price = product.price;
+
+        if(qty <= stock){
+            const updatedItem = await productsService.updateProduct(id, {stock: stock - qty})
+            if(updatedItem){
+                totalAmount += (price*qty)
+            }
+        } else {
+            noStockProducts.push({product:id, quantity: qty})
+        }
+    })
+
+    await Promise.all(productsInCart)
     
+    //Creación de Ticket
+    const ticket = await ticketsService.createTicket({
+        code: codeGenerator(),
+        purchase_datetime: new Date(),
+        amount: totalAmount,
+        purchaser: req.session.user.email
+    })
+
+    if(!ticket){
+        return res.status(400).send({status: 'error', message: 'Something went wrong'})
+    }
+
+    if(noStockProducts.length > 0){
+        await cartsService.updateCart(cid, {products: noStockProducts}) 
+        return res.send({message: 'Some products could not be purchased', products: noStockProducts})
+    } else {
+        cartsService.deleteContentInCart(cid)
+        return res.send(ticket)
+    }
 }

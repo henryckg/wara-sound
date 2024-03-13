@@ -25,7 +25,7 @@ export const currentController = async (req, res) => {
         return res.status(401).send({error: 'Unauthorized'})
     }
     const user = new UserDTO(req.session.user)
-    res.send(user)
+    res.send(user.getCurrentUser())
 }
 
 export const githubCallbackController = async (req, res) => {
